@@ -3,11 +3,12 @@ import re
 import os
 import zipfile
 import subprocess
+import time
 
 
 def check_and_get_data():
     url = f'https://api.github.com/repos/MetaCubeX/mihomo/releases'
-
+    subprocess.run(["winsw", "restart", "D:/Programs/winsw/mihomo.xml"])
     # 发起 GET 请求获取仓库的所有 release
     response = requests.get(url)
     if response.status_code == 200:
@@ -57,4 +58,3 @@ if __name__ == '__main__':
     if down_url:
         print("获取最新版本下载链接成功！开始下载内核...")
         down_extract(down_url)
-    input()
