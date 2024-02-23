@@ -1,14 +1,13 @@
 import requests
-import re
+import shutil
 import os
 import zipfile
 import subprocess
-import time
 
 
 def check_and_get_data():
-    url = f'https://api.github.com/repos/MetaCubeX/mihomo/releases'
-    subprocess.run(["winsw", "restart", "D:/Programs/winsw/mihomo.xml"])
+    url = f'https://api.github.com/repos/SagerNet/sing-box/releases'
+    # subprocess.run(["winsw", "restart", "D:/Programs/winsw/singbox.xml"])
     # 发起 GET 请求获取仓库的所有 release
     response = requests.get(url)
     if response.status_code == 200:
@@ -22,16 +21,14 @@ def check_and_get_data():
                 # 提取每个 pre-release 的文件下载链接
                 for asset in assets:
                     download_url = asset.get('browser_download_url')
-                    if download_url and "windows-amd64-alpha" in download_url:
+                    if download_url and "windows-amd64v3" in download_url:
                         # 获取本地版本
                         url = 'http://127.0.0.1:9090/version'
                         response = requests.get(url)
                         local_version = response.json().get('version')
+                        local_version = local_version.replace(' ', '-')
                         # 使用正则表达式匹配提取
-                        match = re.search(r'(clash|alpha)-(.*?)\.zip', download_url)
-                        remote_version = f"{match.group(1)}-{match.group(2)}"
-                        print(f"本地版本{local_version},最新版本{remote_version}")
-                        if local_version != remote_version:
+                        if local_version not in download_url:
                             return download_url
                         else:
                             print("当前已是最新版本！")
@@ -41,20 +38,30 @@ def check_and_get_data():
 def down_extract(url):
     # 下载压缩包
     response = requests.get(url)
-    with open("mihomo.zip", "wb") as f:
+    with open("singbox.zip", "wb") as f:
         f.write(response.content)
     print("最新内核文件下载成功，开始替换内核...")
-    subprocess.run(["winsw", "stop", "D:/Programs/winsw/mihomo.xml"])
+    subprocess.run(["winsw", "stop", "D:/Programs/winsw/singbox.xml"])
+    # 指定解压文件
+    full_name = os.path.basename(url)
+    split_name = os.path.splitext(full_name)[0]
     # 解压压缩包
-    with zipfile.ZipFile("mihomo.zip", "r") as z:
-        z.extractall("D:/Programs/mihomo")
-    subprocess.run(["winsw", "start", "D:/Programs/winsw/mihomo.xml"])
-    os.remove("mihomo.zip")
+    with zipfile.ZipFile("singbox.zip", "r") as z:
+        sb_folder = "D:/Programs/singbox"
+        target_assert = f"{split_name}/sing-box.exe"
+        z.extract(target_assert, sb_folder)
+        os.remove(f"{sb_folder}/sing-box.exe")
+        shutil.move(f"{sb_folder}/{target_assert}", sb_folder)
+        shutil.rmtree(f"{sb_folder}/{split_name}")
+
+    subprocess.run(["winsw", "start", "D:/Programs/winsw/singbox.xml"])
+    os.remove("singbox.zip")
     print("内核更新成功")
 
 
 if __name__ == '__main__':
     down_url = check_and_get_data()
+    print(down_url)
     if down_url:
         print("获取最新版本下载链接成功！开始下载内核...")
         down_extract(down_url)
