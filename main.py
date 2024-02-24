@@ -36,6 +36,8 @@ def check_and_get_data():
 
 
 def down_extract(url):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows10; U; Windows NT 5.1; zh-CN) AppleWebKit./55.0.15 (KHTML, like) Chrome/91.0.4472'}
+    sb_folder = "D:/Programs/singbox"
     # 下载压缩包
     response = requests.get(url)
     with open("singbox.zip", "wb") as f:
@@ -47,7 +49,6 @@ def down_extract(url):
     split_name = os.path.splitext(full_name)[0]
     # 解压压缩包
     with zipfile.ZipFile("singbox.zip", "r") as z:
-        sb_folder = "D:/Programs/singbox"
         target_assert = f"{split_name}/sing-box.exe"
         z.extract(target_assert, sb_folder)
         os.remove(f"{sb_folder}/sing-box.exe")
@@ -64,4 +65,4 @@ if __name__ == '__main__':
     print(down_url)
     if down_url:
         print("获取最新版本下载链接成功！开始下载内核...")
-        down_extract(down_url)
+        # down_extract(down_url)
