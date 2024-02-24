@@ -32,6 +32,7 @@ def check_and_get_data():
                             return download_url
                         else:
                             print("当前已是最新版本！")
+                            return None
     return None
 
 
@@ -65,4 +66,4 @@ if __name__ == '__main__':
     print(down_url)
     if down_url:
         print("获取最新版本下载链接成功！开始下载内核...")
-        # down_extract(down_url)
+        down_extract(down_url)
