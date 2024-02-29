@@ -9,7 +9,7 @@ def check_and_get_data():
     url = f'https://api.github.com/repos/SagerNet/sing-box/releases'
     # subprocess.run(["winsw", "restart", "D:/Programs/winsw/singbox.xml"])
     # 发起 GET 请求获取仓库的所有 release
-    response = requests.get(url)
+    response = requests.get(url, headers={'Accept': 'application/vnd.github.v3'})
     if response.status_code == 200:
         releases = response.json()
 
@@ -33,6 +33,7 @@ def check_and_get_data():
                         else:
                             print("当前已是最新版本！")
                             return None
+    print(response.json())
     return None
 
 
